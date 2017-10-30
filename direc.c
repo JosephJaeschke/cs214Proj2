@@ -38,17 +38,17 @@ void printdir(char *dir, int depth)
         	lstat(item,&statbuf);  
         	if(S_ISDIR(statbuf.st_mode))
 		{  
-			int id=fork();
-			if(!id)
-			{
-            			if(strcmp(entry->d_name, ".") == 0||strcmp(entry->d_name, "..") == 0)    
+//			int id=fork();
+//			if(!id)
+//			{
+            			if(strcmp(entry->d_name, ".") == 0||strcmp(entry->d_name, "..") == 0)   
                 		{
 					continue;    
 				}
             			printf("%*s%s/\n", depth, "", entry->d_name);  
-            		//	printdir(entry->d_name, depth+4);  
-				chdir(dir);
-			}
+            			printdir(entry->d_name, depth+4);  
+//				chdir(dir);
+//			}
         	} 
 		else if(isCSV(item)) 
 		{
