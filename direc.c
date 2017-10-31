@@ -46,6 +46,7 @@ void printdir(char *dir)
 			id=fork();
 			if(id==0)
 			{
+				procs=0;
 				dp=opendir(entry->d_name);
 				if(dp==NULL)
 				{
@@ -58,6 +59,10 @@ void printdir(char *dir)
         	} 
 		else if(isCSV(entry->d_name)) //fork on each csv to sort
 		{
+			if(strstr(entry->d_name,"-sorted-")!=NULL)
+			{
+				continue;
+			}
 			char* this=strdup(path);
 			strcat(this,entry->d_name);
 			strcat(this,"\0");
@@ -70,7 +75,7 @@ void printdir(char *dir)
 			idCSV=fork();
 			if(idCSV==0)
 			{
-				//sortCSVFile(char* path,char* sortBy,char* outDir);
+				//sortCSVFile(path,sortBy,outDir);
 			}
 			printf("%s\n",entry->d_name);
 	*/
@@ -89,11 +94,17 @@ void printdir(char *dir)
   
 int main(int argc, char *argv[])  
 { 
-
-    char *topdir = argv[1];  
-    if (argc >= 2)  
-        topdir = argv[1];  
-  
-    printdir(topdir);  
-    return 0; 
+	char* topdir;
+	if (argc >= 2)  
+	{
+        	topdir = argv[1];  
+	}
+	else
+	{
+		topdir=malloc(100);
+		getcwd(topdir,sizeof(topdir));
+		printf("%s\n",topdir);
+	}
+	printdir(topdir);  
+	return 0; 
 }  
