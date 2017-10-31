@@ -3,6 +3,7 @@
 #include <dirent.h>  
 #include <string.h>  
 #include <sys/stat.h>  
+#include <sys/wait.h>
 #include <stdlib.h>  
   
 int isCSV(char* name)
@@ -18,47 +19,71 @@ int isCSV(char* name)
 	return 0;
 }
   
-void printdir(char *dir, int depth)  
+void printdir(char *dir)  
 {  
 	DIR *dp;  
 	struct dirent *entry;  
 	struct stat statbuf;  
-
+	char* path=malloc(1000);
 	if((dp=opendir(dir))==NULL)
 	{  
-		fprintf(stderr,"Can`t open directory %s\n", dir);  
         	return ;  
     	}  
-   	//change current work dir to the dir 
-   	//same to the cd comand 
     	chdir(dir);  
+	int id;
+	int idCSV;
+	int procs=0;
     	while((entry=readdir(dp))!=NULL)
 	{
-		char* item=strdup(entry->d_name);
-        	lstat(item,&statbuf);  
+        	lstat(entry->d_name,&statbuf);  
         	if(S_ISDIR(statbuf.st_mode))
 		{  
-//			int id=fork();
-//			if(!id)
-//			{
-            			if(strcmp(entry->d_name, ".") == 0||strcmp(entry->d_name, "..") == 0)   
-                		{
-					continue;    
+            		if(strcmp(entry->d_name, ".") == 0||strcmp(entry->d_name, "..") == 0)   
+                	{
+				continue;
+			}
+			procs++;
+			id=fork();
+			if(id==0)
+			{
+				dp=opendir(entry->d_name);
+				if(dp==NULL)
+				{
+					return;
 				}
-            			printf("%*s%s/\n", depth, "", entry->d_name);  
-            			printdir(entry->d_name, depth+4);  
-//				chdir(dir);
-//			}
+				strcat(path,entry->d_name);
+				strcat(path,"/");
+				chdir(entry->d_name);
+			}
         	} 
-		else if(isCSV(item)) 
+		else if(isCSV(entry->d_name)) //fork on each csv to sort
 		{
-			//fork to sort
-            		printf("%*s%s\n", depth, "", entry->d_name);  
+			char* this=strdup(path);
+			strcat(this,entry->d_name);
+			strcat(this,"\0");
+			printf("%s\n",this);
+			//free(this);
+	/*		
+			//sortCSVFile(char* sortBy,char* fileName,char* outDir);
+            		procs++;
+			printf("forking on %s\n",entry->d_name);
+			idCSV=fork();
+			if(idCSV==0)
+			{
+				//sortCSVFile(char* path,char* sortBy,char* outDir);
+			}
+			printf("%s\n",entry->d_name);
+	*/
 		}
     	} 
-    	//change to the upper dir
+	int i;
+	for(i=0;i<procs;i++)
+	{
+		wait(NULL);
+	}
     	chdir("..");  
     	closedir(dp);     
+	free(path);
 }  
   
   
@@ -69,9 +94,6 @@ int main(int argc, char *argv[])
     if (argc >= 2)  
         topdir = argv[1];  
   
-    printf("Directory scan of %s\n", topdir);  
-    int printdepth=0;
-    printdir(topdir,printdepth);  
-    printf("done.\n");  
+    printdir(topdir);  
     return 0; 
 }  
