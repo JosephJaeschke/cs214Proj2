@@ -108,8 +108,8 @@ void mergeInt(CSVRow* arr,CSVRow* help, int lptr,int rptr,int llimit,int rlimit,
 		}
 	}
         else if(strtof(arr[i].data,NULL)<strtof(arr[j].data,NULL))
-	{
-            strcpy(help[k].data,arr[i].data);
+	{strlen(filename1)-4);
+		sstrlen(filename1)-4);trcpy(help[k].data,arr[i].data);
             help[k].point=arr[i].point;
             strcpy(help[k].string_row,arr[i].string_row);
             k++;
@@ -175,7 +175,7 @@ void callMe(int size,char type,CSVRow* arr, CSVRow* b)
 
 void trim(char* str)
 {
-	char * t = malloc(strlen(str)); 
+	char * t = malloc(strlen(str)); ME, "w");
 	int i =0;
 	int j=0;
 	for(i=0;i<strlen(str);i++)
@@ -191,41 +191,19 @@ void trim(char* str)
 	free(t);
 }
 
-int main(int argc, char ** argv){
+
+void sortCSVFile(char * filename1,char * token, char * outdir){
 	
+	FILE * fp = fopen(filename1, "r");
 	int file_count = 0;
 	char c = 0;
 	int i = 0;
 	char * str_file = malloc(10);
-	char * token = malloc(10);
 	int row_position = 0;
 	int j;
-	if(stdin == NULL){
-		fprintf(stderr, "ERROR: <No Input In STDIN>\n");	
-		free(token);
-		free(str_file);			
-		return 0;
-	}
-	
-	if(argv[1] == NULL){
-		fprintf(stderr, "ERROR: <Expected -c \"item\">\n");	
-		free(token);
-		free(str_file);
-		return 0;
-	}
+	//fprintf(stdout, "%s\n", token);		
 
-	if(argv[1][0] != '-' && argv[1][1] != 'c' && argv[2] == NULL){
-		fprintf(stderr, "ERROR: <Expected -c \"item\">\n");
-		free(token);
-		free(str_file);
-		return 0;
-	}
-	
-	token = strdup(argv[2]);
-
-	//fprintf(stdout, "%s\n", token);	
-				
-	c = getc(stdin);
+	c = fgetc(fp);
 	while (c != EOF) {
 		//printf("%c\n",c);
 		str_file = realloc(str_file, (i+1) * sizeof(char));	
@@ -234,10 +212,13 @@ int main(int argc, char ** argv){
 			file_count++;
 		}
 		i++;
-		c = getc(stdin);
+		c = fgetc(fp);
     }
         
+	fclose(fp);
+	
 	str_file[i] = '\0';
+	
 	
 	CSVRow *movies = malloc(file_count * sizeof(CSVRow));
 	//token = strtok(str_file, "\n");
@@ -248,7 +229,7 @@ int main(int argc, char ** argv){
 		movies[j].string_row = malloc(10000);
 	}
 
-	CSVRow* help=malloc(sizeof(CSVRow)*file_count);    //array used for merging
+	CSVRow* help=malloc(sizeof(CSVRow)*file_count*2);    //array used for merging
     for(j =0;j<file_count;j++)
     {
 	help[j].data=malloc(10000);
@@ -320,7 +301,7 @@ int main(int argc, char ** argv){
 					free(token);
 					free(str_file);
 
-					return 0;
+					return;
 				}
 				//fprintf(stdout,"%d : %d\n",char_found , comma_position_max);
 				//fprintf(stdout, "[%s] : [%s] \n",token, check_token);
@@ -428,13 +409,21 @@ int main(int argc, char ** argv){
 	callMe(file_count,type,movies,help);
 	//printf("heyo\n");
 	//printf("\n");
+	char * filename = malloc(60);
+	
+	char * tempp = malloc(70);
+	strncpy(tempp,filename1,strlen(filename1)-4);
+	tempp[strlen(filename1)-4] = '\0';
+	sprintf(filename, "%s/%s-sorted-%s.csv",outdir,tempp,token);
+	FILE* file_ptr = fopen(filename, "w");
 	for(j = 0; j < file_count; j++){
-		fprintf(stdout, "%s", movies[j].string_row);
+		fprintf(file_ptr, "%s", movies[j].string_row);
 		//printf("[%s]\n", movies[j].data);
 	}
-	
+	fclose(file_ptr);
 	//printf("\n\n");
-
+	free(filename);
+	free(tempp);
 	
 
 	for(j = 0; j < file_count; j++){
@@ -451,5 +440,63 @@ int main(int argc, char ** argv){
 	free(help);
 	free(token);
 	free(str_file);
+
+	return;
+}
+
+int main(int argc, char ** argv){
+/*
+	if(stdin == NULL){
+		fprintf(stderr, "ERROR: <No Input In STDIN>\n");	
+		//free(token);
+		//free(str_file);			
+		return 0;
+	}
+*/	
+	FILE *file;
+
+	if(argv[1] == NULL){
+		fprintf(stderr, "ERROR: <Expected -c \"item\">\n");	
+		//free(token);
+		//free(str_file);
+		return 0;
+	}
+
+	if(argv[1][0] != '-' && argv[1][1] != 'c' && argv[2] == NULL){
+		fprintf(stderr, "ERROR: <Expected -c \"item\">\n");
+		//free(token);
+		//free(str_file);
+		return 0;
+	}
+	
+	char * token = strdup(argv[2]);
+
+	
+	if(argv[3][0] != '-' && argv[3][1] != 'd' && argv[4] == NULL){
+		fprintf(stderr, "ERROR: <Expected -d \"dir\">\n");
+		//free(token);
+		//free(str_file);
+		return 0;
+	}
+	
+	if(argv[5][0] != '-' && argv[5][1] != 'o' && argv[6] == NULL){
+		fprintf(stderr, "ERROR: <Expected -o \"output\">\n");
+		//free(token);
+		//free(str_file);
+		return 0;
+	}
+
+
+	//printf(argv[6]);
+	if(file == NULL){
+		fprintf(stderr, "ERROR: <No File Found\n>");
+		return 0;
+	}
+	
+	//printf("hi");	
+	sortCSVFile(argv[4], token,argv[6]);	
+	
+
+	
 	return 0;
 }
