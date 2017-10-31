@@ -108,8 +108,8 @@ void mergeInt(CSVRow* arr,CSVRow* help, int lptr,int rptr,int llimit,int rlimit,
 		}
 	}
         else if(strtof(arr[i].data,NULL)<strtof(arr[j].data,NULL))
-	{strlen(filename1)-4);
-		sstrlen(filename1)-4);trcpy(help[k].data,arr[i].data);
+	{
+			strcpy(help[k].data,arr[i].data);
             help[k].point=arr[i].point;
             strcpy(help[k].string_row,arr[i].string_row);
             k++;
@@ -175,7 +175,7 @@ void callMe(int size,char type,CSVRow* arr, CSVRow* b)
 
 void trim(char* str)
 {
-	char * t = malloc(strlen(str)); ME, "w");
+	char * t = malloc(strlen(str));
 	int i =0;
 	int j=0;
 	for(i=0;i<strlen(str);i++)
