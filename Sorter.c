@@ -486,7 +486,7 @@ int main(int argc, char ** argv){
 		return 0;
 	}
 
-
+	file = fopen( argv[6], "r");
 	//printf(argv[6]);
 	if(file == NULL){
 		fprintf(stderr, "ERROR: <No File Found\n>");
@@ -497,6 +497,6 @@ int main(int argc, char ** argv){
 	sortCSVFile(argv[4], token,argv[6]);	
 	
 
-	
+	fclose(file);	
 	return 0;
 }
