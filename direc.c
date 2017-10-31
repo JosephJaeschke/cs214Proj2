@@ -31,11 +31,10 @@ void printdir(char *dir)
     	}  
     	chdir(dir);  
 	int id;
+	int idCSV;
 	int procs=0;
     	while((entry=readdir(dp))!=NULL)
 	{
-		strcpy(path,entry->d_name);
-		strcpy(path,"\0");
         	lstat(entry->d_name,&statbuf);  
         	if(S_ISDIR(statbuf.st_mode))
 		{  
@@ -52,22 +51,29 @@ void printdir(char *dir)
 				{
 					return;
 				}
+				strcat(path,entry->d_name);
+				strcat(path,"/");
 				chdir(entry->d_name);
 			}
         	} 
 		else if(isCSV(entry->d_name)) //fork on each csv to sort
 		{
-			/*
+			char* this=strdup(path);
+			strcat(this,entry->d_name);
+			strcat(this,"\0");
+			printf("%s\n",this);
+			//free(this);
+	/*		
 			//sortCSVFile(char* sortBy,char* fileName,char* outDir);
             		procs++;
 			printf("forking on %s\n",entry->d_name);
-			idCSV=fork()
+			idCSV=fork();
 			if(idCSV==0)
 			{
-				//sortCSVFile(char* sortBy,char* fileName,char* outDir);
+				//sortCSVFile(char* path,char* sortBy,char* outDir);
 			}
-			*/
 			printf("%s\n",entry->d_name);
+	*/
 		}
     	} 
 	int i;
