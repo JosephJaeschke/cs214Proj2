@@ -59,12 +59,14 @@ void printdir(char *dir)
 		else if(isCSV(entry->d_name)) //fork on each csv to sort
 		{
 			csvid=fork();
+			procs++;
 			if(csvid==0)
 			{
 				strcat(path,entry->d_name);
 				strcat(path,"\0");
 				printf("%s\n",path);
 				//sortCSVFile(char* sortBy,char* fileName,char* outDir);
+				exit(0);
 			}
 		}
     	} 
@@ -81,11 +83,15 @@ void printdir(char *dir)
   
 int main(int argc, char *argv[])  
 { 
-
-    char *topdir = argv[1];  
-    if (argc >= 2)  
-        topdir = argv[1];  
-  
-    printdir(topdir);  
-    return 0; 
+	char *topdir=malloc(1000);  
+	if (argc >= 2)  
+	{
+        	strcpy(topdir,argv[1]);
+	}
+	else
+	{
+		strcpy(topdir,"./");
+ 	} 
+    	printdir(topdir);  
+    	return 0; 
 } 
