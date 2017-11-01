@@ -304,7 +304,7 @@ void sortCSVFile(char * filename1,char * token, char * outdir){
 					//printf("%d\n %c",char_found, c);
 				}
 				if(char_found == 0){
-					fprintf(stderr, "ERROR: <Selected item was not found in parameters>\n");
+					//fprintf(stderr, "ERROR: <Selected item was not found in parameters>\n");
 					free(check_token);
 					free(movies);
 					free(token);
@@ -495,6 +495,7 @@ void printdir(char * token, char *dir, char * outdir, int idp)
 			procs++;
 			if(id==0)
 			{
+				procs=0;	
 				write(p[1], &indexo, 1);
 				depth+=1;
 				printf("%d, ", getpid());
@@ -554,21 +555,27 @@ int main(int argc, char ** argv){
 		return 0;
 	}
 */	
-	pipe(p);
-	int ipd = getpid();
-	int procNum=1;
-	printf("Initial PID: %d\nPIDS of all child processes: ", ipd);
-	fflush(stdout);
+
+	
+
+
+	if(argc != 3 && argc != 5 && argc != 7){
+		fprintf(stderr, "ERROR <Incorrect format> \n");
+		return 0;	
+	}
+
+	
 	//printf("%d\n", argc);	
 	char * indir =  malloc(1000);
 	char * tempop = malloc(1000);
 	char * token = malloc(1000);
+
 	strcpy(token, argv[2]);
 	strcpy(indir, argv[4]);
 	strcpy(tempop, argv[6]);
 	//fprintf(stdout, "%s \n " , tempop);
 	FILE *file;
-
+	
 	
 	if(argc == 3 && argv[1][0] == '-' && argv[1][1] == 'c' && argv[2] != NULL) {
 		strcpy(indir, "./");
@@ -586,7 +593,7 @@ int main(int argc, char ** argv){
 	
 		file = fopen(argv[4], "r");
 	if(file == NULL){
-		fprintf(stderr, "ERROR: <No Output Dir Found\n>");
+		fprintf(stderr, "ERROR: <No Output Dir Found>\n");
 		return 0;
 	}
 	fclose(file);
@@ -604,14 +611,14 @@ int main(int argc, char ** argv){
 	{
 		strcpy(token, argv[2]);
 	if(argv[1] == NULL){
-		fprintf(stderr, "ERROR: <Expected -c \"item\">\n");	
+		fprintf(stderr, "\nERROR: <Expected -c \"item\">\n");	
 		//free(token);
 		//free(str_file);
 		return 0;
 	}
 
 	if(argv[1][0] != '-' && argv[1][1] != 'c' && argv[2] == NULL){
-		fprintf(stderr, "ERROR: <Expected -c \"item\">\n");
+		fprintf(stderr, "\nERROR: <Expected -c \"item\">\n");
 		//free(token);
 		//free(str_file);
 		return 0;
@@ -620,14 +627,14 @@ int main(int argc, char ** argv){
 	
 	
 	if(argv[3][0] != '-' && argv[3][1] != 'd' && argv[4] == NULL){
-		fprintf(stderr, "ERROR: <Expected -d \"dir\">\n");
+		fprintf(stderr, "\nERROR: <Expected -d \"dir\">\n");
 		//free(token);
 		//free(str_file);
 		return 0;
 	}
 	
 	if(argv[5][0] != '-' && argv[5][1] != 'o' && argv[6] == NULL){
-		fprintf(stderr, "ERROR: <Expected -o \"output\">\n");
+		fprintf(stderr, "\nERROR: <Expected -o \"output\">\n");
 		//free(token);
 		//free(str_file);
 		return 0;
@@ -639,7 +646,7 @@ int main(int argc, char ** argv){
 	file = fopen(argv[6], "r");
 	//printf(argv[6]);
 	if(file == NULL){
-		fprintf(stderr, "ERROR: <No Output Dir Found\n>");
+		fprintf(stderr, "\nERROR: <No Output Dir Found\n>");
 		return 0;
 	}
 	fclose(file);
@@ -647,7 +654,7 @@ int main(int argc, char ** argv){
 	}
 
 	else{
-		fprintf(stderr, "ERROR: <Expected -c at least with -d or -o \"output\">\n");
+		fprintf(stderr, "\nERROR: <Expected -c at least with -d or -o \"output\">\n");
 		return 0;
 	}
 
@@ -656,6 +663,14 @@ int main(int argc, char ** argv){
 	char * outdirnew = malloc(1000);
 	realpath(tempop, outdirnew);
 	//printf("%s\n" ,tempop);
+
+
+
+	pipe(p);
+	int ipd = getpid();
+	int procNum=1;
+	printf("Initial PID: %d\nPIDS of all child processes: ", ipd);
+	fflush(stdout);
 	
 	//printf("%s, %s, %s", token, indir, temp90);	
 	//sortCSVFile(argv[4], token,tempop);	

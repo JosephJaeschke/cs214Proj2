@@ -12,4 +12,4 @@ clean:
 	-rm -f Sorter.o
 	-rm -f Sorter.h.gch
 	-rm -f Sorter
-	-rm -f out.csv
+	-find . -name "*-sorted-*" -delete
